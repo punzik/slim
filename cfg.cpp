@@ -14,6 +14,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <stdlib.h>
+#include <algorithm>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -293,6 +294,8 @@ void Cfg::fillSessionList(){
 
 	sessions.clear();
 
+        typedef pair<string,string> session_t;
+
 	if( !strSessionDir.empty() ) {
 		DIR *pDir = opendir(strSessionDir.c_str());
 
@@ -325,7 +328,7 @@ void Cfg::fillSessionList(){
                                      }
                              }
                              desktop_file.close();
-                             pair<string,string> session(session_name,session_exec);
+                             session_t session(session_name,session_exec);
                              sessions.push_back(session);
                              cout << session_exec << " - " << session_name << endl;
                         }
@@ -341,6 +344,10 @@ void Cfg::fillSessionList(){
         pair<string,string> session("","");
         sessions.push_back(session);
 	}
+
+        std::sort(sessions.begin(), sessions.end(), [](session_t& a, session_t& b) -> bool{
+                return a.first < b.first;
+        });
 }
 
 pair<string,string> Cfg::nextSession() {

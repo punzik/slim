@@ -200,7 +200,9 @@ void App::Run() {
 
 	/* Read configuration and theme */
 	cfg = new Cfg;
-	cfg->readConf(CFGFILE);
+	char *cfgfile = getenv("SLIM_CFGFILE");
+	if (!cfgfile) cfgfile = CFGFILE;
+	cfg->readConf(cfgfile);
 	string themebase = "";
 	string themefile = "";
 	string themedir = "";
@@ -208,7 +210,9 @@ void App::Run() {
 	if (testing) {
 		themeName = testtheme;
 	} else {
-		themebase = string(THEMESDIR) + "/";
+		char *themesdir = getenv("SLIM_THEMESDIR");
+		if (!themesdir) themesdir = THEMESDIR;
+		themebase = string(themesdir) + "/";
 		themeName = cfg->getOption("current_theme");
 		string::size_type pos;
 		if ((pos = themeName.find(",")) != string::npos) {
@@ -812,7 +816,7 @@ void App::RestartServer() {
 	StopServer();
 	RemoveLock();
 	while (waitpid(-1, NULL, WNOHANG) > 0); /* Collects all dead childrens */
-	Run();
+	exit(OK_EXIT);
 }
 
 void App::KillAllClients(Bool top) {

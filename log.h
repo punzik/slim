@@ -9,11 +9,14 @@
 #endif
 #include "const.h"
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
 static class LogUnit {
 	ofstream logFile;
+	bool isFile;
+	inline ostream &getStream() { return isFile ? logFile : cerr; }
 public:
 	bool openLog(const char * filename);
 	void closeLog();
@@ -22,17 +25,17 @@ public:
 
 	template<typename Type>
 	LogUnit & operator<<(const Type & text) {
-		logFile << text; logFile.flush();
+		getStream() << text; getStream().flush();
 		return *this;
 	}
 
 	LogUnit & operator<<(ostream & (*fp)(ostream&)) {
-		logFile << fp; logFile.flush();
+		getStream() << fp; getStream().flush();
 		return *this;
 	}
 
 	LogUnit & operator<<(ios_base & (*fp)(ios_base&)) {
-		logFile << fp; logFile.flush();
+		getStream() << fp; getStream().flush();
 		return *this;
 	}
 } logStream;

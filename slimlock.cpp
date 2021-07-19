@@ -106,13 +106,17 @@ int main(int argc, char **argv) {
 	unsigned int cfg_passwd_timeout;
 	// Read user's current theme
 	cfg = new Cfg;
-	cfg->readConf(CFGFILE);
+	char *cfgfile = getenv("SLIM_CFGFILE");
+	if (!cfgfile) cfgfile = CFGFILE;
+	cfg->readConf(cfgfile);
 	cfg->readConf(SLIMLOCKCFG);
 	string themebase = "";
 	string themefile = "";
 	string themedir = "";
 	themeName = "";
-	themebase = string(THEMESDIR) + "/";
+	char *themesdir = getenv("SLIM_THEMESDIR");
+	if (!themesdir) themesdir = THEMESDIR;
+	themebase = string(themesdir) + "/";
 	themeName = cfg->getOption("current_theme");
 	string::size_type pos;
 	if ((pos = themeName.find(",")) != string::npos) {
